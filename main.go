@@ -15,6 +15,7 @@ type Config struct {
 	SslTruststoreLocation string `yaml:"ssl.truststore.location"`
 	KafkaUsername         string `yaml:"kafka.username"`
 	KafkaPassword         string `yaml:"kafka.password"`
+	KafkaTopic            string `yaml:"kafka.topic"`
 	KafkaConsumerGroup    string `yaml:"kafka.consumer.group"`
 	AutoOffsetReset       string `yaml:"auto.offset.reset"`
 }
@@ -42,7 +43,7 @@ func main() {
 	brokerConfig := getConfig("config.yaml")
 
 	topics := []string{
-		"userEvents_gen2",
+		brokerConfig.KafkaTopic,
 	}
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
