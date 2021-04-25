@@ -8,13 +8,24 @@ import (
 
 func main() {
 
+	kafkaBrokers := ""
+	kafkaSaslMechanisms := ""
+	kafkaSecurityProtocol := ""
+	kafkaUsername := ""
+	kafkaPassword := ""
+	kafkaConsumerGroup := ""
+
 	topics := []string{
 		"mytopic",
 	}
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "host1:9092,host2:9092",
-		"group.id":          "foo",
+		"bootstrap.servers": kafkaBrokers,
+		"sasl.mechanisms":   kafkaSaslMechanisms,
+		"security.protocol": kafkaSecurityProtocol,
+		"sasl.username":     kafkaUsername,
+		"sasl.password":     kafkaPassword,
+		"group.id":          kafkaConsumerGroup,
 		"auto.offset.reset": "smallest"})
 	if err != nil {
 		fmt.Println(err)
