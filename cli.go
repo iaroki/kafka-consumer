@@ -8,7 +8,7 @@ import (
 
 func initCLI() {
 
-	var configFile string
+	var configFile, topicName string
 
 	app := &cli.App{
 		Name:  "kafka-consumer",
@@ -17,16 +17,32 @@ func initCLI() {
 			&cli.StringFlag{
 				Name:        "config",
 				Aliases:     []string{"c"},
-				Usage:       "consumer config [ config.yaml ]",
+				Usage:       "consumer config `config.yaml`",
 				Destination: &configFile,
 				Required:    true,
+			},
+			&cli.StringFlag{
+				Name:        "topic",
+				Aliases:     []string{"t"},
+				Usage:       "topic name to consume `userEvents`",
+				Destination: &topicName,
+				Required:    false,
 			},
 		},
 		Action: func(c *cli.Context) error {
 
 			consumerConfig := getConsumerConfig(configFile)
 			consumerClient := getConsumerClient(consumerConfig)
-			consumeMessages(consumerClient, []string{"userEvents"})
+
+			var topic string
+
+			if topicName != "" {
+				topic = topicName
+			} else {
+				topic = consumerConfig.KafkaTopic
+			}
+
+			consumeMessages(consumerClient, []string{topic})
 
 			return nil
 		},
