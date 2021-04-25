@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"os"
+	"log"
 )
 
 func getConsumerClient(consumerConfig Config) *kafka.Consumer {
 
-	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+	consumerClient, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": consumerConfig.BootstrapServers,
 		"sasl.mechanism":    consumerConfig.SaslMechanism,
 		"security.protocol": consumerConfig.SecurityProtocol,
@@ -18,22 +18,17 @@ func getConsumerClient(consumerConfig Config) *kafka.Consumer {
 		"group.id":          consumerConfig.KafkaConsumerGroup,
 		"auto.offset.reset": consumerConfig.AutoOffsetReset})
 	if err != nil {
-		fmt.Println("ERROR: ", err)
-		os.Exit(333)
+		log.Fatal(err)
 	}
 
-	return consumer
+	return consumerClient
 
 }
 
 func consumeMessages(consumerClient *kafka.Consumer, topic []string) {
-	//topics := []string{
-	//	consumerConfig.KafkaTopic,
-	//}
 	err := consumerClient.SubscribeTopics(topic, nil)
 	if err != nil {
-		fmt.Println("ERROR: ", err)
-		os.Exit(333)
+		log.Fatal(err)
 	}
 
 	run := true
@@ -51,6 +46,6 @@ func consumeMessages(consumerClient *kafka.Consumer, topic []string) {
 
 	err = consumerClient.Close()
 	if err != nil {
-		fmt.Println("ERROR: ", err)
+		log.Fatal(err)
 	}
 }
