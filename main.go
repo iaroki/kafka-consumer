@@ -16,7 +16,7 @@ func main() {
 	kafkaConsumerGroup := ""
 
 	topics := []string{
-		"mytopic",
+		"userEvents_gen2",
 	}
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
@@ -28,36 +28,32 @@ func main() {
 		"group.id":          kafkaConsumerGroup,
 		"auto.offset.reset": "smallest"})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ERROR: ", err)
 		os.Exit(333)
 	}
 
 	err = consumer.SubscribeTopics(topics, nil)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ERROR: ", err)
 		os.Exit(333)
 	}
 
-	run := false
+	run := true
 
 	for run == true {
 		ev := consumer.Poll(0)
 		switch e := ev.(type) {
 		case *kafka.Message:
-			// application-specific processing
-			fmt.Printf("%% Message on %s:\n%s\n",
-				e.TopicPartition, string(e.Value))
+			fmt.Println(string(e.Value))
 		case kafka.Error:
-			fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
+			fmt.Println("ERROR: ", e)
 			run = false
-			//default:
-			//	fmt.Printf("Ignored %v\n", e)
 		}
 	}
 
 	err = consumer.Close()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ERROR: ", err)
 	}
 
 }
